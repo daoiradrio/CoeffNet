@@ -24,8 +24,8 @@ class CoeffSet(Dataset):
     def __getitem__(self, idx):
         dftb_path = os.path.join(self.dftb_dir, f"DFTB_C_{self.mols[idx]}.dat")
         raw_C_dftb = np.loadtxt(dftb_path)
-        #rose_path = os.path.join(self.rose_dir, f"ROSE_C_{self.mols[idx]}.dat")
-        #raw_C_rose = np.loadtxt(rose_path)
+        rose_path = os.path.join(self.rose_dir, f"ROSE_C_{self.mols[idx]}.dat")
+        raw_C_rose = np.loadtxt(rose_path)
         delta_path = os.path.join(self.delta_dir, f"DELTA_C_{self.mols[idx]}.dat")
         raw_C_delta = np.loadtxt(delta_path)
         xyz_path = os.path.join(self.xyz_dir, f"{self.mols[idx]}.xyz")
@@ -33,67 +33,51 @@ class CoeffSet(Dataset):
 
         num_aos = int(raw_C_dftb.shape[0])
         C_dftb = np.zeros((num_aos, num_atoms, 1, 4, 1))
-        #C_rose = np.zeros((num_aos, num_atoms, 1, 4, 1))
+        C_rose = np.zeros((num_aos, num_atoms, 1, 4, 1))
         C_delta = np.zeros((num_aos, num_atoms, 1, 4, 1))
         
         iao = 0
         for ielem, elem in enumerate(elems):
             if elem == "H":
                 C_dftb[:, ielem, 0, 0, 0] = raw_C_dftb[iao, :]
-                #C_rose[:, ielem, 0, 0, 0] = raw_C_rose[iao, :]
+                C_rose[:, ielem, 0, 0, 0] = raw_C_rose[iao, :]
                 C_delta[:, ielem, 0, 0, 0] = raw_C_delta[iao, :]
                 iao += 1
             else:
                 C_dftb[:, ielem, 0, :, 0] = raw_C_dftb[iao:iao+4, :].T
-                #C_rose[:, ielem, 0, :, 0] = raw_C_rose[iao:iao+4, :].T
+                C_rose[:, ielem, 0, :, 0] = raw_C_rose[iao:iao+4, :].T
                 C_delta[:, ielem, 0, :, 0] = raw_C_delta[iao:iao+4, :].T
                 iao += 4
 
-        return C_dftb, C_delta, elems, coords
+        #return C_dftb, C_rose, C_delta, elems, coords
+        return raw_C_dftb
+        
 
-    
-'''
-    def pad_collate_fn(self, batch):
-        batch_C_dftb, batch_C_rose, batch_C_delta = zip(*batch)
 
-        batch_size = len(batch_C_dftb)
-        max_num_mos = max([C_dftb.shape[0] for C_dftb in batch_C_dftb])
-        max_num_atoms = max([C_dftb.shape[1] for C_dftb in batch_C_dftb])
+train_annotation_file = "/Users/dario/datasets/C_sets/full_molecule/medium_train_set/molslist.dat"
+train_dftb_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_train_set/DFTB"
+train_rose_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_train_set/ROSE"
+train_delta_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_train_set/DELTA"
+train_xyz_dir = "/Users/dario/preprocessed_QM9/y_medium_train_set"
+valid_annotation_file = "/Users/dario/datasets/C_sets/full_molecule/medium_valid_set/molslist.dat"
+valid_dftb_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_valid_set/DFTB"
+valid_rose_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_valid_set/ROSE"
+valid_delta_dir = "/Users/dario/datasets/C_sets/full_molecule/medium_valid_set/DELTA"
+valid_xyz_dir = "/Users/dario/preprocessed_QM9/y_medium_valid_set"
 
-        pad_mask = np.zeros((batch_size, max_num_mos, max_num_mos, 1))
+train_dataset = CoeffSet(
+    annotation_file=train_annotation_file,
+    dftb_dir=train_dftb_dir,
+    rose_dir=train_rose_dir,
+    delta_dir=train_delta_dir,
+    xyz_dir=train_xyz_dir
+)
 
-        pad_C_dftb = []
-        pad_C_rose = []
-        pad_C_delta = []
-        for i, (C_dftb, C_rose, C_delta) in enumerate(zip(batch_C_dftb, batch_C_rose, batch_C_delta)):
-            num_mos = C_dftb.shape[0]
-            pad_mask[i, num_mos:max_num_mos, num_mos:max_num_mos] = -np.inf
-            mo_pad_len = max_num_mos - C_dftb.shape[0]
-            atom_pad_len = max_num_atoms - C_dftb.shape[1]
-            pad_C_dftb.append(
-                torch.nn.functional.pad(
-                    torch.from_numpy(C_dftb),
-                    (0, 0, 0, 0, 0, 0, 0, atom_pad_len, 0, mo_pad_len),
-                    value=0
-                ).numpy()
-            )
-            pad_C_rose.append(
-                torch.nn.functional.pad(
-                    torch.from_numpy(C_rose),
-                    (0, 0, 0, 0, 0, 0, 0, atom_pad_len, 0, mo_pad_len),
-                    value=0
-                ).numpy()
-            )
-            pad_C_delta.append(
-                torch.nn.functional.pad(
-                    torch.from_numpy(C_delta),
-                    (0, 0, 0, 0, 0, 0, 0, atom_pad_len, 0, mo_pad_len),
-                    value=0
-                ).numpy()
-            )
-        pad_batch_C_dftb = np.stack(pad_C_dftb)
-        pad_batch_C_rose = np.stack(pad_C_rose)
-        pad_batch_C_delta = np.stack(pad_C_delta)
+n = train_dataset.__len__()
+norms = []
+for i in range(n):
+    C_dftb = train_dataset.__getitem__(i)
+    norms.append(np.sum(np.linalg.norm(C_dftb, axis=0)))
 
-        return pad_batch_C_dftb, pad_batch_C_rose, pad_batch_C_delta, pad_mask
-'''
+print(np.mean(norms))
+print(np.std(norms))

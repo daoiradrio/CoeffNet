@@ -1,0 +1,39 @@
+Learning Rate = 0.05
+
+Epoch 1: Train Loss =    6.622, Valid Loss =    2.848
+Epoch 2: Train Loss =    5.401, Valid Loss =    7.689
+Epoch 3: Train Loss =    4.845, Valid Loss =    2.558
+Epoch 4: Train Loss =    5.788, Valid Loss =    3.028
+Epoch 5: Train Loss =    4.451, Valid Loss =    7.795
+
+Learning Rate = 0.01
+
+Epoch 1: Train Loss =    6.607, Valid Loss =    2.954
+Epoch 2: Train Loss =    3.204, Valid Loss =    4.492
+Epoch 3: Train Loss =    1.970, Valid Loss =    1.364
+Epoch 4: Train Loss =    2.271, Valid Loss =    5.775
+Epoch 5: Train Loss =    2.074, Valid Loss =    1.047
+
+Learning Rate = 0.01 mit abschließendem TensorDense Layer
+
+Epoch 1: Train Loss =    6.339, Valid Loss =    1.843
+Epoch 2: Train Loss =    2.857, Valid Loss =    1.722
+Epoch 3: Train Loss =    2.562, Valid Loss =    5.982
+Epoch 4: Train Loss =    2.366, Valid Loss =    2.073
+Epoch 5: Train Loss =    2.373, Valid Loss =    1.467
+
+Learning Rate = 0.01 mit abschließendem TensorDense Layer, 20 Features
+
+Epoch 1: Train Loss =    4.687, Valid Loss =    3.195
+Epoch 2: Train Loss =    3.317, Valid Loss =    8.191
+Epoch 3: Train Loss =    2.712, Valid Loss =    4.892
+Epoch 4: Train Loss =    2.494, Valid Loss =    6.947
+Epoch 5: Train Loss =    3.033, Valid Loss =    2.663
+
+Learning Rate = 0.001, abschließend TensorDense, 5 Features, applied Update as x = x + V, medium size training set
+
+Epoch 1: Train Loss =    5.485, Valid Loss =    0.959
+Epoch 2: Train Loss =    1.032, Valid Loss =    0.918
+Epoch 3: Train Loss =    1.023, Valid Loss =    0.912
+Epoch 4: Train Loss =    1.015, Valid Loss =    0.986
+Epoch 5: Train Loss =    1.035, Valid Loss =    0.934

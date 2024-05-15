@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-dataset_path = "/Users/dario/datasets/C_sets/full_molecule/small_valid_set"
+dataset_path = "/Users/dario/datasets/C_sets/full_molecule/medium_train_set"
 dftb_path = f"{dataset_path}/DFTB"
 rose_path = f"{dataset_path}/ROSE"
 delta_path = f"{dataset_path}/DELTA"
